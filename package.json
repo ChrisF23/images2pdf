@@ -1,0 +1,22 @@
+{
+  "name": "images2pdf",
+  "version": "1.0.0",
+  "description": "Una aplicación de escritorio que permite convertir un conjunto de imagenes a un archivo pdf",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron source/main/index.js"
+  },
+  "keywords": [
+    "electron",
+    "app",
+    "desktop",
+    "images",
+    "pdf"
+  ],
+  "author": "Christian Farias Aguila",
+  "license": "gpl-3.0",
+  "dependencies": {
+    "bootstrap-icons": "^1.5.0",
+    "electron": "^12.0.8"
+  }
+}
