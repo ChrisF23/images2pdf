@@ -7,56 +7,32 @@
 </head>
 
 <body class="d-flex flex-column" style="background-color: #F7F7F9;">
-    <div class="container">
-        <h2 class="mt-4">Images2PDF</h2>
+    <div class="container mt-3 mb-5">
+        <h3 class="mb-0">Images2PDF</h3>
         <p class="lead">Conversor de imagenes a PDF</p>
 
-        <div class="row row-cols-3 g-4 table-responsive">
-            <!-- Card Imagen -->
-            <div class="col">
-                <div class="card shadow-sm">
-                    <!-- Controles de Imagen -->
-                    <div class="card-header d-grid d-md-flex justify-content-center">
-                        <!-- Mover a la Izquierda -->
-                        <button type="button" class="btn btn-sm btn-light">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/></svg>
-                        </button>
-
-                        <!-- Eliminar -->
-                        <button type="button" class="btn btn-sm btn-light mx-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg>
-                        </button>
-
-                        <!-- Mover a la Derecha -->
-                        <button type="button" class="btn btn-sm btn-light">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>
-                        </button>
-                    </div>
-
-                    <!-- Imagen -->
-                    <img class="mx-auto" style="width: 150px; height: auto;" src="images/sample_1.jpg">
-
-                    <!-- Info de Imagen -->
-                    <div class="card-footer">
-                        <p name="img-name" class="mb-1 card-text text-center">sample_1.jpg</p>
-                        <p name="img-page" class="mt-0 card-text text-center text-muted small">1 de 3</p>
-                    </div>
-                </div>
-            </div>
+        <!-- Cards -->
+        <div class="row row-cols-3 g-4" id="cards">
         </div>
 
     </div>
 
-    <div class="container my-5"></div>
+    <div class="row my-5"></div>
 
-    <footer class="fixed-bottom py-3 bg-dark">
+    <footer class="fixed-bottom py-3 bg-dark shadow-lg mt-5">
         <div class="container">
-            <form method="post">
-                <div class="d-grid d-md-flex justify-content-md-end">
-                    <button class="btn btn-primary col-md-4" type="submit">Convertir a PDF</button>
-                </div>
-            </form>
+            <button id="btn-add-imgs" class="btn btn-primary" type="button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>
+                Agregar Imagenes
+            </button>
+
+            
+
+            <button class="float-end btn btn-success" type="button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-repeat" viewBox="0 0 20 20"><path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/><path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"/></svg>
+                Convertir a PDF
+            </button>
         </div>
     </footer>
-    <script src="index.js"></script>
+    <script defer src="index.js"></script>
 </body>
