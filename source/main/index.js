@@ -1,16 +1,8 @@
-const { app, BrowserWindow } = require("electron");
-const ejse = require('ejs-electron')
+const { app, ipcMain } = require("electron");
+const windows = require("./windows");
 
-app.whenReady().then(() => {
-    const appWindow = new BrowserWindow({
-        webPreferences: {
-            nodeIntegration: true,
-            contextIsolation: false,
-            spellcheck: false,
-            enableRemoteModule: true
-        },
-        width: 900,
-        resizable: false
-    });
-    appWindow.loadFile("../renderer/index.html");
-});
+const seleccionarImagenes = require("./actions/seleccionarImagenes");
+
+app.whenReady().then(() => windows.getAppWindow());
+
+ipcMain.on("seleccionar-imagenes", async (event, rutasGuardadas) => await seleccionarImagenes(event, rutasGuardadas));

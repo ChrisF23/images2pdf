@@ -1,47 +1,47 @@
-const { dialog } = require("electron").remote;
-const path = require("path");
-const fs = require('fs');
+const { ipcRenderer } = require("electron");
+const CONSTANTES = require("../consts");
+// Acciones:
+const { onSeleccionarImagenes } = require("./actions/seleccionarImagenes");
 
-// Plantilla para cards
-let template = fs.readFileSync(path.resolve(__dirname, "./components/card.html"));
+// ----------------------------------------
+// Estado Inicial:
+let cards = this.document.querySelector("#cards");                  // Contenedor de cards.
+const btnAddImgs = this.document.getElementById("btn-add-imgs");    // Boton para agregar imagenes.
+let rutasGuardadas = [];                                            // Rutas de las imagenes agregadas.
+let cantidadImagenesRestantes = CONSTANTES.LIMITE_IMAGENES;         // Cantidad de imagenes restantes.
+actualizarLimiteImagenes();
 
-// Contenedor de cards
-let cards = this.document.querySelector("#cards");
-
-// Boton para agregar imagenes
-const btnAddImgs = this.document.getElementById("btn-add-imgs");
-
-btnAddImgs.addEventListener("click", async () => {
-    const imagesToAdd = await dialog.showOpenDialog({
-            properties: ["openFile", "multiSelections", "dontAddToRecent"],
-            filters: [{ name: "Imagenes", extensions: ["jpg", "png"] }]
-        });
-
-    // Si se canceló la selección de imagenes
-    if (imagesToAdd.canceled || (Array.isArray(imagesToAdd.filePaths) && !imagesToAdd.filePaths.length)) {
-        console.log("No se seleccionaron imagenes");
-        return;
-    }
-
-    imagesToAdd.filePaths.forEach(filePath => crearCard(filePath));
-    calcularPosiciones();
+// ----------------------------------------
+// Seleccionar Imagenes.
+btnAddImgs.addEventListener("click", () => {
+    ipcRenderer.send("seleccionar-imagenes", rutasGuardadas);
+    // Evitar que el usuario presione el boton entre el momento en que la ventana de dialogo se cierra y se abre el modal. 
+    desactivarBotones();
 });
 
+ipcRenderer.on("seleccionar-imagenes", (event, response) => {
+    let resultado = onSeleccionarImagenes(response, rutasGuardadas);
+    // Volver a activar los botones.
+    activarBotones();
 
-function crearCard(filePath) {
-    // Crear el card y agregarlo al contenedor
-    let card = document.createElement("div");
-    card.className = "col";
-    card.innerHTML = template;
-    cards.appendChild(card);
+    if (resultado == null) return;
+    rutasGuardadas = resultado;
 
-    // Escribir datos
-    card.querySelector("[name='img-name']").innerHTML = path.basename(filePath);
-    card.querySelector("[name='img']").src = filePath;
-}
+    calcularPosiciones();
+    actualizarLimiteImagenes();
+});
+
+// ----------------------------------------
+// Comun.
+
+function desactivarBotones() { document.querySelectorAll("button").forEach(b => b.disabled = true) }
+
+function activarBotones() { document.querySelectorAll("button").forEach(b => b.disabled = false) }
+
+function obtenerCantidadActualImagenes() { return cards.children.length }
 
 function calcularPosiciones() {
-    let total = cards.children.length;
+    let total = obtenerCantidadActualImagenes();
     let counter = 1;
 
     for (const card of cards.children) {
@@ -50,3 +50,17 @@ function calcularPosiciones() {
     }
 }
 
+function actualizarLimiteImagenes() {
+    cantidadImagenesRestantes = CONSTANTES.LIMITE_IMAGENES - obtenerCantidadActualImagenes();
+
+    if (cantidadImagenesRestantes == CONSTANTES.LIMITE_IMAGENES) {
+        document.getElementById("limit-imgs").innerHTML = `Seleccione hasta ${cantidadImagenesRestantes} imágenes.`;
+        btnAddImgs.disabled = false;
+    } else if (cantidadImagenesRestantes != 0) {
+        document.getElementById("limit-imgs").innerHTML = `Seleccione hasta ${cantidadImagenesRestantes} imágenes.`;
+        btnAddImgs.disabled = false;
+    } else {
+        document.getElementById("limit-imgs").innerHTML = "Limite de imágenes alcanzado.";
+        btnAddImgs.disabled = true;
+    }
+}
