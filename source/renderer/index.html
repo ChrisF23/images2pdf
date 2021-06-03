@@ -6,7 +6,24 @@
     <title>Images2PDF</title>
 </head>
 
-<body class="d-flex flex-column" style="background-color: #F7F7F9;">
+<body class="d-flex flex-column" style="background-color: #f7f7f9;">
+    <div class="modal fade" tabindex="-1" id="alert-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="title">Titulo del modal</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="message">Mensaje del modal</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="container mt-3 mb-5">
         <h3 class="mb-3">Images2PDF<span class="lead"> - Conversor de imagenes a PDF</span></h3>
         
@@ -39,4 +56,5 @@
         </div>
     </footer>
     <script defer src="index.js"></script>
+    <script defer src="alertModal.js"></script>
 </body>

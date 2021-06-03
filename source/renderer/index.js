@@ -1,57 +1,47 @@
 const { ipcRenderer } = require("electron");
-const path = require("path");
-const fs = require('fs');
 const CONSTANTES = require("../consts");
+// Acciones:
+const { onSeleccionarImagenes } = require("./actions/seleccionarImagenes");
 
-let rutasGuardadas = []; 
-
-// Plantilla para cards
-let template = fs.readFileSync(path.resolve(__dirname, "./components/card.html"));
-
-// Contenedor de cards
-let cards = this.document.querySelector("#cards");
-
-// Boton para agregar imagenes
-const btnAddImgs = this.document.getElementById("btn-add-imgs");
-
-let limiteImagenes = CONSTANTES.LIMITE_IMAGENES;
+// ----------------------------------------
+// Estado Inicial:
+let cards = this.document.querySelector("#cards");                  // Contenedor de cards.
+const btnAddImgs = this.document.getElementById("btn-add-imgs");    // Boton para agregar imagenes.
+let rutasGuardadas = [];                                            // Rutas de las imagenes agregadas.
+let cantidadImagenesRestantes = CONSTANTES.LIMITE_IMAGENES;         // Cantidad de imagenes restantes.
 actualizarLimiteImagenes();
 
 // ----------------------------------------
 // Seleccionar Imagenes.
-btnAddImgs.addEventListener("click", async () => ipcRenderer.send("seleccionar-imagenes", rutasGuardadas));
-ipcRenderer.on("seleccionar-imagenes", (event, imagenesSeleccionadas) => {
-    if (imagenesSeleccionadas === undefined || !Array.isArray(imagenesSeleccionadas)) {
-        alert("Error");
-        return;
-    }
+btnAddImgs.addEventListener("click", () => {
+    ipcRenderer.send("seleccionar-imagenes", rutasGuardadas);
+    // Evitar que el usuario presione el boton entre el momento en que la ventana de dialogo se cierra y se abre el modal. 
+    desactivarBotones();
+});
 
-    imagenesSeleccionadas.forEach(ruta => {
-        rutasGuardadas.push(ruta);
-        crearCard(ruta)
-    });
+ipcRenderer.on("seleccionar-imagenes", (event, response) => {
+    let resultado = onSeleccionarImagenes(response, rutasGuardadas);
+    // Volver a activar los botones.
+    activarBotones();
+
+    if (resultado == null) return;
+    rutasGuardadas = resultado;
+
     calcularPosiciones();
-
-    limiteImagenes -= imagenesSeleccionadas.length;
     actualizarLimiteImagenes();
 });
 
 // ----------------------------------------
-// UI
-function crearCard(filePath) {
-    // Crear el card y agregarlo al contenedor
-    let card = document.createElement("div");
-    card.className = "col";
-    card.innerHTML = template;
-    cards.appendChild(card);
+// Comun.
 
-    // Escribir datos
-    card.querySelector("[name='img-name']").innerHTML = path.basename(filePath);
-    card.querySelector("[name='img']").src = filePath;
-}
+function desactivarBotones() { document.querySelectorAll("button").forEach(b => b.disabled = true) }
+
+function activarBotones() { document.querySelectorAll("button").forEach(b => b.disabled = false) }
+
+function obtenerCantidadActualImagenes() { return cards.children.length }
 
 function calcularPosiciones() {
-    let total = cards.children.length;
+    let total = obtenerCantidadActualImagenes();
     let counter = 1;
 
     for (const card of cards.children) {
@@ -61,8 +51,13 @@ function calcularPosiciones() {
 }
 
 function actualizarLimiteImagenes() {
-    if (limiteImagenes != 0) {
-        document.getElementById("limit-imgs").innerHTML = `Seleccione hasta ${limiteImagenes} imágenes.`;
+    cantidadImagenesRestantes = CONSTANTES.LIMITE_IMAGENES - obtenerCantidadActualImagenes();
+
+    if (cantidadImagenesRestantes == CONSTANTES.LIMITE_IMAGENES) {
+        document.getElementById("limit-imgs").innerHTML = `Seleccione hasta ${cantidadImagenesRestantes} imágenes.`;
+        btnAddImgs.disabled = false;
+    } else if (cantidadImagenesRestantes != 0) {
+        document.getElementById("limit-imgs").innerHTML = `Seleccione hasta ${cantidadImagenesRestantes} imágenes.`;
         btnAddImgs.disabled = false;
     } else {
         document.getElementById("limit-imgs").innerHTML = "Limite de imágenes alcanzado.";
