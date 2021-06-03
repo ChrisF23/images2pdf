@@ -5,30 +5,23 @@ const { onSeleccionarImagenes } = require("./actions/seleccionarImagenes");
 
 // ----------------------------------------
 // Estado Inicial:
-let cards = this.document.querySelector("#cards");                  // Contenedor de cards.
-const btnAddImgs = this.document.getElementById("btn-add-imgs");    // Boton para agregar imagenes.
-let rutasGuardadas = [];                                            // Rutas de las imagenes agregadas.
+let cards = document.querySelector("#cards");                  // Contenedor de cards.
+const btnAddImgs = document.getElementById("btn-add-imgs");    // Boton para agregar imagenes.
 let cantidadImagenesRestantes = CONSTANTES.LIMITE_IMAGENES;         // Cantidad de imagenes restantes.
 actualizarLimiteImagenes();
 
 // ----------------------------------------
 // Seleccionar Imagenes.
 btnAddImgs.addEventListener("click", () => {
-    ipcRenderer.send("seleccionar-imagenes", rutasGuardadas);
+    ipcRenderer.send("seleccionar-imagenes", obtenerRutasActualesImagenes());
     // Evitar que el usuario presione el boton entre el momento en que la ventana de dialogo se cierra y se abre el modal. 
     desactivarBotones();
 });
 
 ipcRenderer.on("seleccionar-imagenes", (event, response) => {
-    let resultado = onSeleccionarImagenes(response, rutasGuardadas);
+    onSeleccionarImagenes(response);
     // Volver a activar los botones.
     activarBotones();
-
-    if (resultado == null) return;
-    rutasGuardadas = resultado;
-
-    calcularPosiciones();
-    actualizarLimiteImagenes();
 });
 
 // ----------------------------------------
@@ -39,6 +32,15 @@ function desactivarBotones() { document.querySelectorAll("button").forEach(b => 
 function activarBotones() { document.querySelectorAll("button").forEach(b => b.disabled = false) }
 
 function obtenerCantidadActualImagenes() { return cards.children.length }
+
+function obtenerRutasActualesImagenes() {
+    let rutasActuales = [];
+    for (const element of cards.querySelectorAll("[name='img']")) {
+        rutasActuales.push(element.getAttribute("src"));
+    }
+
+    return rutasActuales;
+}
 
 function calcularPosiciones() {
     let total = obtenerCantidadActualImagenes();
