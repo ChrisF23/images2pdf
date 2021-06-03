@@ -26,10 +26,7 @@ function onSeleccionarImagenes(response) {
                 // rutasGuardadas.push(ruta);
                 crearCard(ruta)
             });
-
-            calcularPosiciones();
-            actualizarLimiteImagenes();
-
+            
             if (tieneAdvertencia) mostrarAlert("Advertencia", response.message);
             break;
         default:
@@ -51,9 +48,42 @@ function crearCard(ruta) {
     card.querySelector("[name='btn-remove']").addEventListener("click", (e1) => {
         mostrarAlertConfirmarQuitarCard(card, (e2) => {
             card.remove();
-            calcularPosiciones();
-            actualizarLimiteImagenes();
+            actualizarVista();
         });
+    });
+
+    card.querySelector("[name='btn-left']").addEventListener("click", (e1) => {
+        let _cards = Array.from(cards.children);
+        let index = _cards.indexOf(card);
+        
+        if (index == -1) { alert("Error inesperado"); }
+
+        // Evitar mover la primera card a la izquierda
+        if (index == 0) {
+            alert("No se puede mover la primera card a la izquierda");
+            return;
+        }
+
+        cards.insertBefore(card, cards.children[index - 1]);
+
+        actualizarVista();
+    });
+
+    card.querySelector("[name='btn-right']").addEventListener("click", (e1) => {
+        let _cards = Array.from(cards.children);
+        let index = _cards.indexOf(card);
+        
+        if (index == -1) { alert("Error inesperado"); }
+
+        // Evitar mover la primera card a la izquierda
+        if (index == obtenerCantidadActualImagenes() - 1) {
+            alert("No se puede mover la ultima card a la derecha");
+            return;
+        }
+
+        cards.insertBefore(card, cards.children[index + 2]);
+
+        actualizarVista();
     });
 }
 

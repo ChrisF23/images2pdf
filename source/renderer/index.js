@@ -14,7 +14,7 @@ actualizarLimiteImagenes();
 // Seleccionar Imagenes.
 btnAddImgs.addEventListener("click", () => {
     ipcRenderer.send("seleccionar-imagenes", obtenerRutasActualesImagenes());
-    // Evitar que el usuario presione el boton entre el momento en que la ventana de dialogo se cierra y se abre el modal. 
+    // Evitar que el usuario presione el boton entre el momento en que la ventana de dialogo se cierra y se abre el modal.
     desactivarBotones();
 });
 
@@ -22,6 +22,8 @@ ipcRenderer.on("seleccionar-imagenes", (event, response) => {
     onSeleccionarImagenes(response);
     // Volver a activar los botones.
     activarBotones();
+
+    actualizarVista();
 });
 
 // ----------------------------------------
@@ -41,6 +43,8 @@ function obtenerRutasActualesImagenes() {
 
     return rutasActuales;
 }
+
+// -----------------------
 
 function calcularPosiciones() {
     let total = obtenerCantidadActualImagenes();
@@ -65,4 +69,34 @@ function actualizarLimiteImagenes() {
         document.getElementById("limit-imgs").innerHTML = "Limite de imágenes alcanzado.";
         btnAddImgs.disabled = true;
     }
+}
+
+function actualizarBotonesCards() {
+    let _cards = Array.from(cards.children);
+    _cards.forEach((_card, _index) => {
+        if (_index == 0) {
+            _card.querySelector("[name='btn-left']").disabled = true;
+
+            if (obtenerCantidadActualImagenes() == 1) {
+                _card.querySelector("[name='btn-right']").disabled = true;
+                return;
+            }
+
+            _card.querySelector("[name='btn-right']").disabled = false;
+            return;
+        }
+        if (_index == obtenerCantidadActualImagenes() - 1) {
+            _card.querySelector("[name='btn-left']").disabled = false;
+            _card.querySelector("[name='btn-right']").disabled = true;
+            return;
+        }
+        _card.querySelector("[name='btn-left']").disabled = false;
+        _card.querySelector("[name='btn-right']").disabled = false;
+    });
+}
+
+function actualizarVista() {
+    calcularPosiciones();
+    actualizarLimiteImagenes();
+    actualizarBotonesCards();
 }
