@@ -1,8 +1,11 @@
+const fs = require("fs");
+const path = require("path");
+
 // Plantilla para cards
 let cardTemplate = fs.readFileSync(path.resolve(__dirname, "../components/card.html"));
-const { mostrarAlert } = require("../alertModal");
+const { mostrarAlert, mostrarAlertConfirmarQuitarCard } = require("../alertModal");
 
-function onSeleccionarImagenes(response, rutasGuardadas) {
+function onSeleccionarImagenes(response) {
     let tieneAdvertencia = false;
 
     switch (response.status) {
@@ -20,19 +23,19 @@ function onSeleccionarImagenes(response, rutasGuardadas) {
             }
 
             imagenesSeleccionadas.forEach(ruta => {
-                rutasGuardadas.push(ruta);
+                // rutasGuardadas.push(ruta);
                 crearCard(ruta)
             });
 
+            calcularPosiciones();
+            actualizarLimiteImagenes();
+
             if (tieneAdvertencia) mostrarAlert("Advertencia", response.message);
-
-            return rutasGuardadas;
-
+            break;
         default:
             mostrarAlert("Error", "El estatus de la respuesta no fue OK, WARNING o ERROR.");
             break;
     }
-    return null;
 }
 
 function crearCard(ruta) {
@@ -45,6 +48,13 @@ function crearCard(ruta) {
     // Escribir datos
     card.querySelector("[name='img-name']").innerHTML = path.basename(ruta);
     card.querySelector("[name='img']").src = ruta;
+    card.querySelector("[name='btn-remove']").addEventListener("click", (e1) => {
+        mostrarAlertConfirmarQuitarCard(card, (e2) => {
+            card.remove();
+            calcularPosiciones();
+            actualizarLimiteImagenes();
+        });
+    });
 }
 
 module.exports = {
